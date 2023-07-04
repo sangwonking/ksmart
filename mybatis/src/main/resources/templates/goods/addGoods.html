@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+	<head>
+    	<link rel="stylesheet" type="text/css" th:href="@{/css/table.css}"/>
+    	<style>
+    		input{
+    			width: 98%;
+    			height: 23px;
+    		}
+    		td:nth-child(3n+1):not(:last-child){
+    			color: white;
+    			font-weight: 700;
+    			background-color: cornflowerblue;
+    		}
+    		select{
+    			width: 99%;
+    			text-align: center;
+    			height: 23px;
+    		}
+    		#addGoodsBtn, #resetBtn {
+    			width: 49%;
+    			height: 25px;
+    		}
+    	</style>
+    	
+    </head>
+    
+    <th:block layout:fragment="customJs">
+    	<script th:src="@{/js/jquery-3.7.0.js}"></script>
+    	<script>
+	    	// 유효성검사 함수
+			const validCheck = element => {
+				let data = $(element).val();
+				let eleId = $(element).attr('id');
+				if(typeof data == 'undefined' || data == null || data == '' ){
+					let cate = $(`label[for="${eleId}"]`).text();
+					alert(`[${cate}] 필수 입력항목입니다.`);
+					$(element).focus();
+					return false;
+				}
+				return true;
+			}
+    	
+    		$('#addGoodsBtn').click(function(){
+    			const validateEle = $('#addGoodsForm select,input');   			
+    			let isSubmit = false;
+    			validateEle.each((idx, item) => {    				
+	    			isSubmit = validCheck(item);
+	    			return isSubmit;
+    			})
+    			if(isSubmit) $('#addGoodsForm').submit();
+    		})
+    	</script>
+    </th:block>
+
+	<!-- 2023년 06월 27일 숙제 확인 -->
+	<!-- 판매자 조회 셀렉트 value=판매자아이디 화면출력(판매자명) -->
+	<!-- 
+	<select>
+		<option value="">===판매자를 선택해주세요===</option>
+		<option value="판매자아이디">판매자명</option>
+		<option value="판매자아이디">판매자명</option>
+		<option value="판매자아이디">판매자명</option>
+		<option value="판매자아이디">판매자명</option>
+	</select>
+	 -->
+	<!-- 상품명 -->
+	<!-- 상품가격 -->
+	<!-- 상품등록: 유효검사 후 (db 저장은 상품코드(자동증가), 등록일자(현재날짜) -->
+	<th:block layout:fragment="customContents">
+		<form id="addGoodsForm" th:action="@{/goods/addGoods}" method="post">
+			<table>
+				<tbody>			
+					<tr>
+						<td>
+							<label for="sellerId">판매자</label>
+						</td>
+						<td>
+							<select th:if="${session.SID != null AND session.SLEVEL == 1}" 
+									id="sellerId" name="goodsSellerId">
+								<option value="">===판매자를 선택해주세요===</option>
+								<option th:unless="${#lists.isEmpty(sellerInfoList)}"
+										th:each="l : ${sellerInfoList}" 
+										th:value="${l.memberId}"
+										th:text="|${l.memberId} :::: ${l.memberName}|">
+								</option>
+							</select>
+							<input th:unless="${session.SID != null AND session.SLEVEL == 1}"
+								   type="text" id="sellerId" name="goodsSellerId" th:value="${session.SID}"
+								   readonly="readonly" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="goodsName">상품명</label>
+						</td>
+						<td>
+							<input type="text" id="goodsName" name="goodsName" 
+								   placeholder="상품명을 입력해주세요." />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="goodsPrice">상품가격</label>
+						</td>
+						<td>
+							<input type="number" id="goodsPrice" name="goodsPrice" 
+								   placeholder="상품가격을 입력해주세요." />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button type="button" id="addGoodsBtn">상품등록</button>
+							<button type="reset" id="resetBtn">입력취소</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	
+	</th:block>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</html>

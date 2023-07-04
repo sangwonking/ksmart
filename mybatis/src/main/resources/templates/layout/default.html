@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${title}"></title>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
+</head>
+<body>
+	<div id="wrapper">
+		<!-- header start -->
+		<div th:replace="~{fragments/header :: headerFragment}"></div>
+		<!-- header end -->
+		
+		<!-- aside start -->
+		<div th:replace="~{fragments/aside :: asideFragment}"></div>
+		<!-- aside end -->
+		
+		<!-- contents start -->
+		<div id="rightcolumn" style="overflow: scroll;">
+			<!-- 페이지마다 내용이 바뀌는 공간을 미리 정의 -->
+			<th:block layout:fragment="customContents"></th:block>
+		</div>
+		<!-- contents end -->
+		
+		<!-- footer start -->
+		<div th:replace="~{fragments/footer :: footerFragment}"></div>
+		<!-- footer end -->
+	</div>
+	
+	<!-- 페이지마다 작성될 스크립트 공간 정의 -->
+	<th:block layout:fragment="customJs"></th:block>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

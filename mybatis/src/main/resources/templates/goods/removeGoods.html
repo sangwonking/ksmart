@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+	<head>
+    	<link rel="stylesheet" type="text/css" th:href="@{/css/table.css}"/>
+    	<style>
+    		input{
+    			width: 98%;
+    			height: 23px;
+    		}
+    		td:nth-child(3n+1):not(:last-child){
+    			color: white;
+    			font-weight: 700;
+    			background-color: cornflowerblue;
+    		}
+    		select{
+    			width: 99%;
+    			text-align: center;
+    			height: 23px;
+    		}
+    		#removeGoodsBtn, #resetBtn {
+    			width: 49%;
+    			height: 25px;
+    		}
+    	</style>
+    </head>
+    
+    <th:block layout:fragment="customJs">
+    	<script th:src="@{/js/jquery-3.7.0.js}"></script>
+    	<script type="text/javascript" th:inline="javascript">
+    		/*<![CDATA[*/
+    		let msg = '[[${msg}]]';
+    		if(msg != 'null') alert(msg);
+    		/*]]>*/
+    		// 유효성검사 함수
+   			const validCheck = element => {
+   				let data = $(element).val();
+   				let eleId = $(element).attr('id');
+   				if(typeof data == 'undefined' || data == null || data == '' ){
+   					let cate = $(`label[for="${eleId}"]`).text();
+   					alert(`[${cate}] 필수 입력항목입니다.`);
+   					$(element).focus();
+   					return false;
+   				}
+   				return true;
+   			}
+    		$('#removeGoodsBtn').click(function(){
+      			const validateEle = $('#memberPw');   			
+      			
+      			let isSubmit = validCheck(validateEle);
+  	    		
+      			if(isSubmit) $('#removeGoodsForm').submit();
+    		});
+    	</script>
+    </th:block>
+
+	<th:block layout:fragment="customContents">
+		<form id="removeGoodsForm" th:action="@{/goods/removeGoods}" method="post">
+			<table>
+				<tbody>			
+					<tr>
+						<td>
+							<label>상품정보</label>
+						</td>
+						<td>
+							<input type="hidden" name="goodsCode" th:value="${goodsCode}" />
+							<label th:text="|상품코드:${goodsCode}, 상품명:${goodsName}|" ></label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="memberPw">판매자비밀번호</label>
+						</td>
+						<td>							
+							<input type="text" id="memberPw" name="memberPw"
+								   placeholder="회원의 비밀번호를 입력해주세요."/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button type="button" id="removeGoodsBtn">상품삭제</button>
+							<button type="reset" id="resetBtn">입력취소</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</th:block>
+	
+	
+	
+	
+	
+</html>

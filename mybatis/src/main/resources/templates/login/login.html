@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+	<head>
+    	<link rel="stylesheet" type="text/css" th:href="@{/css/table.css}"/>
+    	<style>
+    		input{
+    			width: 98%;
+    			height: 23px;
+    		}
+    		td:nth-child(3n+1):not(:last-child){
+    			color: white;
+    			font-weight: 700;
+    			background-color: cornflowerblue;
+    		}
+    		#loginBtn, #resetBtn {
+    			width: 49%;
+    			height: 25px;
+    		}
+    	</style>
+    </head>
+    
+    <th:block layout:fragment="customJs">
+    	<script th:src="@{/js/jquery-3.7.0.js}"></script>
+    	<script type="text/javascript" th:inline="javascript">
+    		// cdata xml, html script : <, { 태그 관련 해서 예약어로 지정되어있는데  
+    		// <![CDATA['문자열']]> -> 'CDATA[ ] 대괄호 안은 문자열입니다.'를 지정하는데 사용
+    		/*<![CDATA[*/
+    		let msg = '[[${msg}]]';
+    		if(msg != 'null') alert(msg);
+    		/*]]>*/
+    		
+    		// 유효성검사 함수
+    		const validCheck = element => {
+    			let data = $(element).val();
+    			let eleId = $(element).attr('id');
+    			if(typeof data == 'undefined' || data == null || data == '' ){
+    				let cate = $(`label[for="${eleId}"]`).text();
+    				alert(`${cate} 필수 입력항목입니다.`);
+    				$(element).focus();
+    				return false;
+    			}
+    			return true;
+    		}
+    		
+    		$('#loginBtn').click(function(e){
+    			e.preventDefault(); // 요소의 기본 이벤트 동작 방지
+    			const validateEle = $('#loginForm input');
+    			let isSubmit = false;
+    			validateEle.each((idx, item) => {    				
+	    			isSubmit = validCheck(item);
+	    			return isSubmit;
+    			})
+    			if(isSubmit) $('#loginForm').submit();
+    		});
+    		
+    	</script>
+    </th:block>
+
+	<th:block layout:fragment="customContents">
+		<form id="loginForm" th:action="@{/member/login}" method="post">
+			<table>
+				<tbody>			
+					<tr>
+						<td>
+							<label for="memberId">회원아이디</label>
+						</td>
+						<td>
+							<input type="text" id="memberId" name="memberId"
+								   placeholder="회원의 아이디를 입력해주세요." />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="memberPw">회원비밀번호</label>
+						</td>
+						<td>
+							<input type="text" id="memberPw" name="memberPw"
+								   placeholder="회원의 비밀번호를 입력해주세요."/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button type="submit" id="loginBtn">로그인</button>
+							<button type="reset" id="resetBtn">입력취소</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</th:block>
+	
+	
+	
+	
+	
+</html>

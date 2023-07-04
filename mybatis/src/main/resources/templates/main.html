@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+	<th:block layout:fragment="customContents">
+		<!--/* 1.태그의 속성으로 작성하는 방법 <tag th:속성명="${타입리프 구문}"/>
+			   2.인라인스타일로 작성하는 방법 <tag>[[${타입리프 구문}]]</tag>		*/--> 
+		<h1 th:text="${contents}">[[${contents}]]</h1>
+	</th:block>
+</html>

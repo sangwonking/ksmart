@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+      
+    <head>
+    	<link rel="stylesheet" type="text/css" th:href="@{/css/table.css}"/>
+    </head>
+
+	<th:block layout:fragment="customContents">
+		<!--/* 검색(searchFragment2 select:상품코드, 상품명, 판매자 아이디, 판매자 이름, 판매자 이메일 */-->
+		<!--/* 검색 주소: /goods/goodsList, HTTP method: get */-->
+		<th:block th:insert="~{search/search :: searchFragment2}"></th:block>
+		<br><br>
+		<table th:with="colSpan=${session.SLEVEL == 1 ? 9 : 7}">
+			<thead>
+				<tr>
+					<th>상품코드</th>
+					<th>상품명</th>
+					<th>상품가격</th>
+					<th>판매자아이디</th>
+					<th>판매자이름</th>
+					<th>판매자이메일</th>
+					<th>상품등록날짜</th>
+					<th th:if="${session.SLEVEL == 1}">수정</th>
+					<th th:if="${session.SLEVEL == 1}">삭제</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:unless="${#lists.isEmpty(goodsList)}" th:each="l : ${goodsList}">
+					<td th:text="${l.goodsCode}"></td>
+					<td th:text="${l.goodsName}"></td>
+					<td th:text="${l.goodsPrice}"></td>
+					<td th:text="${l.goodsSellerId}"></td>
+					<th:block th:object="${l.sellerInfo}">
+						<td th:text="${l.sellerInfo.memberName}"></td>
+						<td th:text="*{memberEmail}"></td>
+					</th:block>
+					<td th:text="${l.goodsRegDate}"></td>
+					<td th:if="${session.SLEVEL == 1}">
+						<a th:href="@{/goods/modifyGoods(goodsCode=${l.goodsCode})}">수정</a>
+					</td>
+					<td  th:if="${session.SLEVEL == 1}">
+						<a th:href="@{/goods/removeGoods(goodsCode=${l.goodsCode})}">삭제</a>
+					</td>
+				</tr>
+				<tr th:if="${#lists.isEmpty(goodsList)}">
+					<td th:colspan="${colSpan}">등록된 상품이 없습니다.</td>
+				</tr>
+				
+			</tbody>
+		</table>
+	</th:block>
+	
+	
+	
+	
+	
+	
+</html>

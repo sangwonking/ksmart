@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+	<head>
+    	<link rel="stylesheet" type="text/css" th:href="@{/css/table.css}"/>
+    	<style>
+    		input{
+    			width: 98%;
+    			height: 23px;
+    		}
+    		td:nth-child(3n+1):not(:last-child){
+    			color: white;
+    			font-weight: 700;
+    			background-color: cornflowerblue;
+    		}
+    		select{
+    			width: 99%;
+    			text-align: center;
+    			height: 23px;
+    		}
+    		#modifyGoodsBtn, #resetBtn {
+    			width: 49%;
+    			height: 25px;
+    		}
+    	</style>
+    </head>
+    
+    <th:block layout:fragment="customJs">
+    	<script th:src="@{/js/jquery-3.7.0.js}"></script>
+    </th:block>
+
+	<th:block layout:fragment="customContents">
+		<form id="modifyGoodsForm" th:action="@{/goods/modifyGoods}" method="post">
+			<table th:object="${goodsInfo}">
+				<tbody>			
+					<tr>
+						<td>
+							<label for="goodsCode">상품코드</label>
+						</td>
+						<td>
+							<input type="text" id="goodsCode" name="goodsCode" th:value="*{goodsCode}" 
+								   readonly="readonly"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="goodsName">상품명</label>
+						</td>
+						<td>
+							<input type="text" id="goodsName" name="goodsName" th:value="*{goodsName}"
+								   placeholder="상품명을 입력해주세요."/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="goodsPrice">상품가격</label>
+						</td>
+						<td>
+							<input type="text" id="goodsPrice" name="goodsPrice" th:value="*{goodsPrice}"
+								   placeholder="상품가격을 입력해주세요."/>
+						</td>
+					</tr>
+					<tr th:if="${session.SID != null AND session.SLEVEL == 1}">
+						<td>
+							<label for="goodsSellerId">판매자</label>
+						</td>
+						<td>
+							<select id="goodsSellerId" name="goodsSellerId">
+								<option value="">===판매자를 선택해주세요===</option>
+								<th:block th:unless="${#lists.isEmpty(sellerInfoList)}"
+										  th:each="l : ${sellerInfoList}">
+									<option th:value="${l.memberId}" 
+											th:selected="${l.memberId} == *{goodsSellerId}"
+											th:text="|${l.memberId} :::: ${l.memberName}|">
+									</option>
+								</th:block>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button type="submit" id="modifyGoodsBtn">수정완료</button>
+							<button type="reset" id="resetBtn">입력취소</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</th:block>
+	
+	
+	
+	
+	
+</html>

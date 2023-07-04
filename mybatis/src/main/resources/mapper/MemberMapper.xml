@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.mybatis.mapper.MemberMapper">
+
+	<!-- mybatis DTO 와 ResultSet의 결과값을 미리 매핑 정의 -->
+	<resultMap type="Member" id="memberResultMap">
+		<!-- id태그는 조회시 테이블의 PK(기본키) -->
+		<id 	column="m_id" 		property="memberId"/>
+		<!-- result태그는 조회시 테이블의 일반컬럼 혹은 외래키 -->
+		<result column="m_pw" 		property="memberPw"/>
+		<result column="m_name" 	property="memberName"/>
+		<result column="m_level" 	property="memberLevel"/>
+		<result column="m_email" 	property="memberEmail"/>
+		<result column="m_addr" 	property="memberAddr"/>
+		<result column="m_reg_date" property="memberRegDate"/>
+	</resultMap>
+	
+	<select id="getLoginHistoryList" parameterType="map" resultType="map">
+		/* 로그인 이력 조회 */
+		SELECT
+			l.login_date	AS loginDate,
+			l.logout_date	AS logoutDate,
+			m.m_id			AS memberId,
+			m.m_name		AS memberName,
+			ml.level_name	AS levelName,
+			m.m_email		AS memberEmail
+		FROM
+			tb_login AS l
+			INNER JOIN 
+			tb_member AS m
+			ON 
+			l.login_id = m.m_id
+			INNER JOIN 
+			tb_member_level AS ml
+			ON 
+			m.m_level = ml.level_num
+		ORDER BY l.login_date DESC 
+		<if test="startIndex != null and startIndex > -1">
+			LIMIT #{startIndex}, #{rowPerPage};
+		</if>
+	
+	</select>
+	
+	<select id="getLoginCnt" resultType="int">
+		/* 로그인 이력 테이블의 전체 행의 갯수 */
+		SELECT
+			COUNT(*)
+		FROM
+			tb_login;
+	</select>
+	
+	<select id="getMemberListByLevel" parameterType="int" resultMap="memberResultMap">
+		SELECT 
+			m_id,
+			m_name,
+			m_level,
+			m_email,
+			m_addr,
+			m_reg_date
+		FROM
+			tb_member
+		WHERE 
+			m_level = #{memberLevel};
+	</select>
+	
+	<delete id="removeMemberById" parameterType="String">
+		/* 회원 삭제 */
+		DELETE
+		FROM
+			tb_member
+		WHERE
+			m_id = #{memberId};
+	</delete>
+	
+	<delete id="removeLoginHistoryById" parameterType="String">
+		/* 회원별 로그인 이력 삭제 */
+		DELETE
+		FROM
+		 	tb_login
+		WHERE
+			login_id = #{memberId};
+	</delete>
+	
+	<delete id="removeOrderById" parameterType="String">
+		/* 구매자별 구매이력 삭제 */
+		DELETE 
+			o
+		FROM 
+			tb_order AS o
+		WHERE 
+			o.o_id = #{memberId};
+	</delete>
+	
+	<update id="modifyMember" parameterType="Member">
+		/* 회원수정 */
+		UPDATE tb_member
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="memberPw != null and memberPw != ''">						
+				m_pw 	= #{memberPw},
+			</if>
+			<if test="memberLevel != null and memberLevel != ''">
+				m_level = #{memberLevel},
+			</if>
+			<if test="memberName != null and memberName != ''">
+				m_name 	= #{memberName},
+			</if>
+			<if test="memberEmail != null and memberEmail != ''">
+				m_email = #{memberEmail},
+			</if>
+			<if test="memberAddr != null and memberAddr != ''">
+				m_addr 	= #{memberAddr}
+			</if>
+		</trim>
+		WHERE
+			m_id = #{memberId}
+	
+	</update>
+	
+	<select id="getMemberInfoById" parameterType="String" resultMap="memberResultMap">
+		/* 회원별 상세조회 */
+		SELECT
+			m.m_id,
+			m.m_pw,
+			m.m_name,
+			m.m_level,
+			m.m_email,
+			m.m_addr,
+			m.m_reg_date
+		FROM 
+			tb_member AS m
+		WHERE 
+			m.m_id = #{memberId};
+	</select>
+
+	<insert id="addMember" parameterType="Member">
+		/* 회원가입 */
+		INSERT INTO tb_member
+			(m_id, m_pw, m_name, m_level, m_email, m_addr, m_reg_date)
+		VALUES 
+			(#{memberId}, #{memberPw}, #{memberName}, #{memberLevel}, #{memberEmail}, #{memberAddr}, CURDATE());
+	</insert>
+
+	<select id="idCheck" resultType="boolean" parameterType="String">
+		/* 아이디 중복체크 */
+		SELECT 
+			IF(COUNT(m.m_id) > 0, 1, 0)
+		FROM
+			tb_member AS m
+		WHERE 
+			m.m_id = #{memberId};
+	</select>
+
+	<select id="getMemberLevelList" resultType="MemberLevel">
+		/* 회원등급 조회 */
+		SELECT
+			l.level_num 	AS levelNum,
+			l.level_name 	AS levelName 
+		FROM
+			tb_member_level AS l
+	</select>
+
+	<select id="getMemberList" parameterType="map" resultType="Member">
+		/* 회원목록 조회 */
+		SELECT 
+			m_id 		AS memberId,
+			m_pw 		AS memberPw, 
+			m_name 		AS memberName, 
+			m_level 	AS memberLevel, 
+			m_email 	AS memberEmail, 
+			m_addr 		AS memberAddr, 
+			m_reg_date 	AS memberRegDate
+		FROM 
+			tb_member
+		<where>
+			<if test="searchValue != null and searchValue != ''">
+				${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+			</if>
+		</where>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>
